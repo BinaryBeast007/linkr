@@ -1,6 +1,7 @@
-import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Redirect } from '@nestjs/common';
 import { CreateShortUrl } from './dtos/create-short-url.dto';
 import { ShortUrlsService } from './providers/short-urls.service';
+import { ShortUrlCodeDto } from './dtos/short-url-code.dto';
 
 @Controller('short-urls')
 export class ShortUrlsController {
@@ -18,5 +19,21 @@ export class ShortUrlsController {
       }
       throw new Error('Failed to create shortened URL');
     }
+  }
+
+  @Get(':shortUrlCode')
+  @Redirect()
+  async redirect(@Param() params: ShortUrlCodeDto) {
+    const { shortUrlCode } = params;
+
+    const shortUrl =
+      await this.shortUrlsService.findByShortUrlCode(shortUrlCode);
+    if (!shortUrl) {
+      throw new NotFoundException('Short URL not found');
+    }
+
+    await this.shortUrlsService.incrementClickCount(shortUrlCode);
+
+    return { url: shortUrl.originalUrl };
   }
 }

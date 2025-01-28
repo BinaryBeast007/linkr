@@ -12,10 +12,24 @@ export class ShortUrlsService {
     private readonly shortUrlRepository: Repository<ShortUrl>,
     private readonly createShortUrlProvider: CreateShortUrlProvider,
   ) {}
-  
+
   public async createShortUrl(
     createShortUrl: CreateShortUrl,
   ): Promise<ShortUrl> {
     return await this.createShortUrlProvider.createShortUrl(createShortUrl);
+  }
+
+  public async findByShortUrlCode(
+    shortUrlCode: string,
+  ): Promise<ShortUrl | null> {
+    return this.shortUrlRepository.findOneBy({ shortenedUrl: shortUrlCode });
+  }
+
+  public async incrementClickCount(shortUrlCode: string): Promise<void> {
+    await this.shortUrlRepository.increment(
+      { shortenedUrl: shortUrlCode },
+      'clickCount',
+      1,
+    );
   }
 }
