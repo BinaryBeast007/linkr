@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { ShortUrlsModule } from './short-urls/short-urls.module';
@@ -7,6 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import environmentValidation from './config/environment.validation';
 
 @Module({
   imports: [
@@ -14,6 +14,7 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       envFilePath: ['.env'],
       load: [databaseConfig],
+      validationSchema: environmentValidation,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -33,7 +34,7 @@ import { AuthModule } from './auth/auth.module';
     ShortUrlsModule,
     AuthModule,
   ],
-  controllers: [AppController],
+  controllers: [],
   providers: [AppService],
 })
 export class AppModule {}
