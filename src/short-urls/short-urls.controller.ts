@@ -2,7 +2,10 @@ import { BadRequestException, Body, Controller, Get, NotFoundException, Param, P
 import { CreateShortUrl } from './dtos/create-short-url.dto';
 import { ShortUrlsService } from './providers/short-urls.service';
 import { ShortUrlCodeDto } from './dtos/short-url-code.dto';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { AuthType } from 'src/auth/enums/auth-type.enum';
 
+@Auth(AuthType.None)
 @Controller('short-urls')
 export class ShortUrlsController {
   constructor(private readonly shortUrlsService: ShortUrlsService) {}
