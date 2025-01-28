@@ -6,6 +6,7 @@ import { ShortUrlsModule } from './short-urls/short-urls.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import databaseConfig from './config/database.config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
     }),
     UsersModule,
     ShortUrlsModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
