@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Post } from '@nestjs/common';
 import { CreateShortUrl } from './dtos/create-short-url.dto';
 import { ShortUrlsService } from './providers/short-urls.service';
 
@@ -13,6 +13,9 @@ export class ShortUrlsController {
         await this.shortUrlsService.createShortUrl(createShortUrl);
       return { success: true, data: shortUrl };
     } catch (error) {
+      if (error instanceof BadRequestException) {
+        throw error;
+      }
       throw new Error('Failed to create shortened URL');
     }
   }
