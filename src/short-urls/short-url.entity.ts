@@ -1,9 +1,11 @@
+import { ClickMetadata } from 'src/click-metadata/click-metadata.entity';
 import { User } from 'src/users/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -60,4 +62,7 @@ export class ShortUrl {
 
   @ManyToOne(() => User, (user) => user.shortUrls)
   user: User;
+
+  @OneToMany(() => ClickMetadata, (clickMetadata) => clickMetadata.shortUrl)
+  clickMetadata: ClickMetadata[];
 }

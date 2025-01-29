@@ -1,14 +1,32 @@
-import { BadRequestException, Body, Controller, Get, NotFoundException, Param, Post, Redirect } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  forwardRef,
+  Get,
+  Inject,
+  NotFoundException,
+  Param,
+  Post,
+  Redirect,
+  Req,
+} from '@nestjs/common';
 import { CreateShortUrl } from './dtos/create-short-url.dto';
 import { ShortUrlsService } from './providers/short-urls.service';
 import { ShortUrlCodeDto } from './dtos/short-url-code.dto';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { AuthType } from 'src/auth/enums/auth-type.enum';
+import { ClickMetadataService } from 'src/click-metadata/providers/click-metadata.service';
+import { Request } from 'express';
 
 @Auth(AuthType.None)
 @Controller('short-urls')
 export class ShortUrlsController {
-  constructor(private readonly shortUrlsService: ShortUrlsService) {}
+  constructor(
+    private readonly shortUrlsService: ShortUrlsService,
+    @Inject(forwardRef(() => ClickMetadataService))
+    private readonly clickMetadataService: ClickMetadataService,
+  ) {}
 
   @Post()
   public async createShortUrl(@Body() createShortUrl: CreateShortUrl) {
@@ -26,7 +44,7 @@ export class ShortUrlsController {
 
   @Get(':shortUrlCode')
   @Redirect()
-  async redirect(@Param() params: ShortUrlCodeDto) {
+  async redirect(@Param() params: ShortUrlCodeDto, @Req() request: Request) {
     const { shortUrlCode } = params;
 
     const shortUrl =
@@ -36,6 +54,8 @@ export class ShortUrlsController {
     }
 
     await this.shortUrlsService.incrementClickCount(shortUrlCode);
+
+    await this.clickMetadataService.logClickMetadata(shortUrlCode, request);
 
     return { url: shortUrl.originalUrl };
   }
