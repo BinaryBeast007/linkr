@@ -45,4 +45,12 @@ export class ClickMetadataService {
 
     await this.clickMetadataRepository.save(clickMetadata);
   }
+
+  public async findClickMetadataByShortUrlCode(
+    shortUrlCode: string,
+  ): Promise<ClickMetadata[]> | null {
+    return await this.shortUrlsService.findClickMetadataByShortUrlCode(
+      shortUrlCode,
+    );
+  }
 }

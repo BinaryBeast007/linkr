@@ -12,7 +12,7 @@ import {
 @Entity()
 export class ShortUrl {
   @PrimaryGeneratedColumn()
-  urlId: number;
+  id: number;
 
   @Column({
     type: 'varchar',

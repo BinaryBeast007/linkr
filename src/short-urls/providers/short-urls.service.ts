@@ -1,9 +1,14 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  RequestTimeoutException,
+} from '@nestjs/common';
 import { CreateShortUrl } from '../dtos/create-short-url.dto';
 import { ShortUrl } from '../short-url.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateShortUrlProvider } from './create-short-url.provider';
+import { ClickMetadata } from 'src/click-metadata/click-metadata.entity';
 
 @Injectable()
 export class ShortUrlsService {
@@ -31,5 +36,21 @@ export class ShortUrlsService {
       'clickCount',
       1,
     );
+  }
+
+  public async findClickMetadataByShortUrlCode(
+    shortUrlCode: string,
+  ): Promise<ClickMetadata[]> | null {
+    let shortUrl = undefined;
+    try {
+      shortUrl = await this.shortUrlRepository.findOne({
+        where: { shortenedUrl: shortUrlCode },
+        relations: ['clickMetadata'],
+      });
+    } catch (error) {
+      throw new RequestTimeoutException();
+    }
+
+    return shortUrl;
   }
 }
