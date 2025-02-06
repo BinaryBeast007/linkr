@@ -12,6 +12,7 @@ import { AccessTokenGuard } from './auth/guards/access-token/access-token.guard'
 import { AuthenticationGuard } from './auth/guards/authentication/authentication.guard';
 import { JwtModule } from '@nestjs/jwt';
 import { ClickMetadataModule } from './click-metadata/click-metadata.module';
+import { CacheModule } from './cache/cache.module';
 import jwtConfig from './auth/config/jwt.config';
 
 @Module({
@@ -42,6 +43,7 @@ import jwtConfig from './auth/config/jwt.config';
     ShortUrlsModule,
     AuthModule,
     ClickMetadataModule,
+    CacheModule,
   ],
   controllers: [],
   providers: [

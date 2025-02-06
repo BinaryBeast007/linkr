@@ -5,6 +5,7 @@ import { CreateShortUrlProvider } from './providers/create-short-url.provider';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShortUrl } from './short-url.entity';
 import { ClickMetadataModule } from 'src/click-metadata/click-metadata.module';
+import { CacheModule } from 'src/cache/cache.module';
 
 @Module({
   controllers: [ShortUrlsController],
@@ -12,6 +13,7 @@ import { ClickMetadataModule } from 'src/click-metadata/click-metadata.module';
   imports: [
     TypeOrmModule.forFeature([ShortUrl]),
     forwardRef(() => ClickMetadataModule),
+    CacheModule,
   ],
   exports: [ShortUrlsService],
 })

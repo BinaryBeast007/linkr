@@ -9,6 +9,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateShortUrlProvider } from './create-short-url.provider';
 import { ClickMetadata } from 'src/click-metadata/click-metadata.entity';
+import { CacheService } from 'src/cache/providers/cache.service';
 
 @Injectable()
 export class ShortUrlsService {
@@ -16,18 +17,35 @@ export class ShortUrlsService {
     @InjectRepository(ShortUrl)
     private readonly shortUrlRepository: Repository<ShortUrl>,
     private readonly createShortUrlProvider: CreateShortUrlProvider,
+    private readonly cacheService: CacheService,
   ) {}
 
   public async createShortUrl(
     createShortUrl: CreateShortUrl,
   ): Promise<ShortUrl> {
-    return await this.createShortUrlProvider.createShortUrl(createShortUrl);
+    const shortUrl =
+      await this.createShortUrlProvider.createShortUrl(createShortUrl);
+    await this.cacheService.set(shortUrl.shortenedUrl, shortUrl);
+    return shortUrl;
   }
 
   public async findByShortUrlCode(
     shortUrlCode: string,
   ): Promise<ShortUrl | null> {
-    return this.shortUrlRepository.findOneBy({ shortenedUrl: shortUrlCode });
+    const cachedShortUrl = await this.cacheService.get<ShortUrl>(shortUrlCode);
+    if (cachedShortUrl) {
+      return cachedShortUrl;
+    }
+
+    const shortUrl = await this.shortUrlRepository.findOneBy({
+      shortenedUrl: shortUrlCode,
+    });
+    if (!shortUrl) {
+      return null;
+    }
+
+    await this.cacheService.set(shortUrlCode, shortUrl);
+    return shortUrl;
   }
 
   public async incrementClickCount(shortUrlCode: string): Promise<void> {
@@ -36,6 +54,7 @@ export class ShortUrlsService {
       'clickCount',
       1,
     );
+    await this.cacheService.delete(shortUrlCode);
   }
 
   public async findClickMetadataByShortUrlCode(
@@ -50,6 +69,11 @@ export class ShortUrlsService {
     } catch (error) {
       throw new RequestTimeoutException();
     }
+
+    await this.cacheService.set(
+      `${shortUrlCode}-metadata`,
+      shortUrl.clickMetadata,
+    );
 
     return shortUrl;
   }
