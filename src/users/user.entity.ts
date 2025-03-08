@@ -1,3 +1,4 @@
+import { Exclude } from 'class-transformer';
 import { ShortUrl } from 'src/short-urls/short-url.entity';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
@@ -33,12 +34,14 @@ export class User {
     length: 120,
     nullable: true,
   })
+  @Exclude()
   password: string;
 
   @Column({
     type: 'varchar',
     nullable: true,
   })
+  @Exclude()
   googleId?: string;
 
   @OneToMany(() => ShortUrl, (shortUrl) => shortUrl.user)
