@@ -27,7 +27,7 @@
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/platform-express": "^10.4.19",
     "@nestjs/typeorm": "^11.0.0",
-    "axios": "^1.7.9",
+    "axios": "^1.8.2",
     "bcrypt": "^5.1.1",
     "cacheable": "^1.8.8",
     "class-transformer": "^0.5.1",
